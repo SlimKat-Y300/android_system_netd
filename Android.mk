@@ -19,7 +19,6 @@ LOCAL_SRC_FILES:=                                      \
                   PppController.cpp                    \
                   ResolverController.cpp               \
                   SecondaryTableController.cpp         \
-                  SoftapController.cpp                 \
                   TetherController.cpp                 \
                   oem_iptables_hook.cpp                \
                   UidMarkMap.cpp                       \
@@ -41,6 +40,16 @@ LOCAL_CFLAGS := -Werror=format
 LOCAL_SHARED_LIBRARIES := libstlport libsysutils liblog libcutils libnetutils \
                           libcrypto libhardware_legacy libmdnssd libdl \
                           liblogwrap
+
+ifeq ($(BOARD_HAS_ATH_WLAN),true)
+  LOCAL_CFLAGS += -DATH_WLAN
+  LOCAL_CFLAGS += -DWIFI_MODULE_PATH=\"$(WIFI_DRIVER_MODULE_PATH)\"
+  LOCAL_C_INCLUDES += external/wpa_supplicant_8/wpa_supplicant/src/common
+  LOCAL_SRC_FILES += SoftapControllerATH.cpp
+  LOCAL_SHARED_LIBRARIES := $(LOCAL_SHARED_LIBRARIES) libwpa_client
+else
+   LOCAL_SRC_FILES += SoftapController.cpp
+endif
 
 include $(BUILD_EXECUTABLE)
 
